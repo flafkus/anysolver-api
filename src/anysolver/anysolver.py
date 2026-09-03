@@ -1,6 +1,7 @@
 from typing import Optional
 from anysolver.exceptions import AnySolverInternalError, AnySolverExternalError
 from enum import Enum
+import time
 
 import requests
 
@@ -16,10 +17,10 @@ class AnySolver():
             data["settings"] = settings
         res = requests.post(f"{API_BASE}/createTask", json=data).json()
         
-        if res['errorId'] == 1:
-            raise AnySolverExternalError
-        elif res['error'] == 2:
-            raise AnySolverInternalError
+        if res.get('errorId') == 1:
+            raise AnySolverExternalError(f"{res.get('errorCode')}: {res.get('errorDescription')}")
+        elif res.get('errorId') == 2:
+            raise AnySolverInternalError(f"{res.get('errorCode')}: {res.get('errorDescription')}")
         
         return res
     
@@ -27,10 +28,10 @@ class AnySolver():
         data = {"clientKey": self.API_KEY, "taskId": taskId}
         res = requests.post(f"{API_BASE}/getTaskResult", json=data).json()
         
-        if res['errorId'] == 1:
-            raise AnySolverExternalError
-        elif res['error'] == 2:
-            raise AnySolverInternalError
+        if res.get('errorId') == 1:
+            raise AnySolverExternalError(f"{res.get('errorCode')}: {res.get('errorDescription')}")
+        elif res.get('errorId') == 2:
+            raise AnySolverInternalError(f"{res.get('errorCode')}: {res.get('errorDescription')}")
         
         return res
 
@@ -38,12 +39,30 @@ class AnySolver():
         data = {"clientKey": self.API_KEY}
         res = requests.post(f"{API_BASE}/getBalance", json=data).json()  
           
-        if res['errorId'] == 1:
-            raise AnySolverExternalError
-        elif res['error'] == 2:
-            raise AnySolverInternalError
+        if res.get('errorId') == 1:
+            raise AnySolverExternalError(f"{res.get('errorCode')}: {res.get('errorDescription')}")
+        elif res.get('errorId') == 2:
+            raise AnySolverInternalError(f"{res.get('errorCode')}: {res.get('errorDescription')}")
         
         return res
     
     
+    def solve(self, task: dict, settings: Optional[dict] = None, timeout: int = 180, delay: int = 5) -> str:
+        created_task = self.createTask(task, settings)
+        print(created_task)
+        task_id = created_task.get("taskId")
+        
+        for i in range(int(timeout / delay)):
+            result = self.getTaskResult(task_id)
+            status = result.get("status")
+            if status == "processing":
+                time.sleep(delay)
+                continue
+            elif status == "ready":
+                return result.get("solution")
+            elif status == "failed":
+                raise AnySolverExternalError(f"{result}: {result.get('errorDescription')}")
+        
+        print(f"Task {task_id} timed out")
+        return
     
