@@ -1,7 +1,15 @@
 [project]
-name = "anysolver"
+name = "anysolver-api"
 version = "0.1.0"
 description = "Python wrapper for the AnySolver API"
 readme = "README.md"
+license = "MIT"
 requires-python = ">=3.12"
 dependencies = ["requests"]
+
+[project.urls]
+Repository = "https://github.com/flafkus/anysolver-api"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

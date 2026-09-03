@@ -1,7 +1,6 @@
 from typing import Optional
-from anysolver.exceptions import *
+from anysolver_api.exceptions import *
 import time
-
 import requests
 
 API_BASE = "https://api.anysolver.com"
