@@ -57,7 +57,7 @@ class AnySolver():
             elif status == "ready":
                 return result.get("solution")
             elif status == "failed":
-                raise AnySolverExternalError(f"{result}: {result.get('errorDescription')}")
+                raise AnySolverExternalError(f"{result.get('errorCode')}: {result.get('errorDescription')}")
             else:
                 time.sleep(delay)
                 continue
