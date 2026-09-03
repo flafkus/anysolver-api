@@ -3,3 +3,6 @@ class AnySolverExternalError(Exception):
 
 class AnySolverInternalError(Exception):
     pass
+
+class AnySolverTimeoutError(Exception):
+    pass
