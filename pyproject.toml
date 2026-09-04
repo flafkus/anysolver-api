@@ -1,6 +1,6 @@
 [project]
 name = "anysolver-api"
-version = "0.1.0"
+version = "0.1.1"
 description = "Python wrapper for the AnySolver API"
 readme = "README.md"
 license = "MIT"
