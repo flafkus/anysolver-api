@@ -1,11 +1,12 @@
-from typing import Optional
-from anysolver_api.exceptions import *
 import time
+
 import requests
+
+from anysolver_api.exceptions import *
 
 API_BASE = "https://api.anysolver.com"
 
-class AnySolver():
+class AnySolver:
     def __init__(self, api_key):
         self.API_KEY = api_key
         
@@ -19,7 +20,7 @@ class AnySolver():
 
         return res
         
-    def createTask(self, task: dict, settings: Optional[dict] = None) -> str:
+    def createTask(self, task: dict, settings: dict | None = None) -> str:
         data = {"clientKey": self.API_KEY, "task": task}
         if settings:
             data["settings"] = settings
@@ -38,7 +39,7 @@ class AnySolver():
         return res.get("balance")
     
     
-    def solve(self, task: dict, settings: Optional[dict] = None, timeout: int = 180, delay: int = 5) -> str:
+    def solve(self, task: dict, settings: dict | None = None, timeout: int = 180, delay: int = 5) -> str:
         task_id = self.createTask(task, settings)
         
         for i in range(int(timeout / delay)):
