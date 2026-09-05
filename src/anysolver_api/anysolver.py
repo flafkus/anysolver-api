@@ -9,39 +9,32 @@ class AnySolver():
     def __init__(self, api_key):
         self.API_KEY = api_key
         
+    def post(self, url, json):
+        res = requests.post(f"{API_BASE}{url}", json=json, timeout=30).json()
+        
+        if res.get('errorId') == 1:
+            raise AnySolverExternalError(f"{res.get('errorCode')}: {res.get('errorDescription')}")
+        elif res.get('errorId') == 2:
+            raise AnySolverInternalError(f"{res.get('errorCode')}: {res.get('errorDescription')}")
+
+        return res
+        
     def createTask(self, task: dict, settings: Optional[dict] = None) -> str:
         data = {"clientKey": self.API_KEY, "task": task}
         if settings:
             data["settings"] = settings
-        res = requests.post(f"{API_BASE}/createTask", json=data, timeout=30).json()
-        
-        if res.get('errorId') == 1:
-            raise AnySolverExternalError(f"{res.get('errorCode')}: {res.get('errorDescription')}")
-        elif res.get('errorId') == 2:
-            raise AnySolverInternalError(f"{res.get('errorCode')}: {res.get('errorDescription')}")
-        
+            
+        res = self.post("/createTask", json=data)
         return res.get("taskId")
     
     def getTaskResult(self, taskId: str) -> dict:
         data = {"clientKey": self.API_KEY, "taskId": taskId}
-        res = requests.post(f"{API_BASE}/getTaskResult", json=data, timeout=30).json()
-        
-        if res.get('errorId') == 1:
-            raise AnySolverExternalError(f"{res.get('errorCode')}: {res.get('errorDescription')}")
-        elif res.get('errorId') == 2:
-            raise AnySolverInternalError(f"{res.get('errorCode')}: {res.get('errorDescription')}")
-        
+        res = self.post("/getTaskResult", json=data)        
         return res
 
     def getBalance(self) -> str:
         data = {"clientKey": self.API_KEY}
-        res = requests.post(f"{API_BASE}/getBalance", json=data, timeout=30).json()
-          
-        if res.get('errorId') == 1:
-            raise AnySolverExternalError(f"{res.get('errorCode')}: {res.get('errorDescription')}")
-        elif res.get('errorId') == 2:
-            raise AnySolverInternalError(f"{res.get('errorCode')}: {res.get('errorDescription')}")
-        
+        res = self.post("/getBalance", json=data)                
         return res.get("balance")
     
     
